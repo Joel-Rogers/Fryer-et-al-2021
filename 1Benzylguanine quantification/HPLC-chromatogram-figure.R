@@ -45130,7 +45130,6 @@ ggplot(data = filter(comb_tibble, between(`Time/ min`, 5, 15)),
                      y = `Intensity shifted scaled`,
                      color = Sample)) +
   geom_line(size=1) +
-  #geom_hline(yintercept=50, linetype="dashed", color = "black") + 
   scale_colour_manual(values=cbPalette2,
                       labels=labels_formatted) +
   # xlim=c(range(5, 15)),
@@ -45142,13 +45141,16 @@ ggplot(data = filter(comb_tibble, between(`Time/ min`, 5, 15)),
   annotate("segment", x = 9.5, xend = 9.95, y = 3, yend = 3, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
   annotate("segment", x = 10.1, xend = 11.2, y = 2.5, yend = 2.5, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
   annotate("segment", x = 11.6, xend = 12, y = 3, yend = 3, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
+  annotate('text', x = 10, y = 3.3, label = '1', size = 10) +
+  annotate('text', x = 10.6, y = 2.8, label = '2', size = 10) +
+  annotate('text', x = 12.1, y = 3.3, label = '3', size = 10) +
   theme_classic() +
   theme(plot.title = element_text(size=20, hjust = 0.5),
-        axis.title = element_text(size=20), legend.text = element_text(size=13),
+        axis.title = element_text(size=20), legend.text = element_text(size=20),
         axis.title.x = element_text(vjust=-1),
         axis.title.y = element_text(vjust = 2),
-        legend.title = element_text(size=20),
-        legend.text = element_text(size=20, align = 0),
+        legend.title = element_text(size=25),
+        legend.text.align = 0,
         axis.text.x = element_text(size = 20),
         axis.text.y = element_text(size = 20),
         aspect.ratio = 1/1.5)
