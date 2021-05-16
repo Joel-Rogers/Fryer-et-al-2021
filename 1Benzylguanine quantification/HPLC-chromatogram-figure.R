@@ -5,7 +5,8 @@
 rm(list = ls())
 
 # All chromatograms of interest were opened in OpenChrom, overlaid, then 
-# exported as an R script. This is the output. It takes a while to run/ "load".
+# exported as an R script. This is the output. It takes a while to run/ "load" 
+# the first time you do so.
 
 # Header
 xValueList<-vector("list", 5)
@@ -45079,7 +45080,7 @@ y_tibble
 y_shift <- 50000 # Define amount (intensity/ mAU) to shift y values by - 
 # this is cumulative, and the order is defined by the below vector
 
-shift_order = c(# This vector determines the order of samples, from lowest
+shift_order <- c(# This vector determines the order of samples, from lowest
   # (baseline) to highest (most shifted)
   '500 uM BG-PEG-MA',
   '0.5 uM BG-PEG-NH2',
@@ -45087,6 +45088,15 @@ shift_order = c(# This vector determines the order of samples, from lowest
   '50 uM BG-PEG-NH2',
   '600 uM BG-PEG-NH2'
 )
+
+labels_formatted <- c(
+  expression(paste('600 ',mu,'M BG-PEG-NH'[2])),
+  expression(paste('50 ',mu,'M BG-PEG-NH'[2])),
+  expression(paste('5 ',mu,'M BG-PEG-NH'[2])),
+  expression(paste('0.5 ',mu,'M BG-PEG-NH'[2])),
+  expression(paste('500 ',mu,'M BG-PEG-MA'))
+)  # Vector for holding formatted labels for plot. Not sure if they're tibble-safe,
+# so I'll keep them out of it.
 
 
 comb_tibble <- cbind(x_tibble, y_tibble) %>%# Combine x and y values
@@ -45105,34 +45115,42 @@ comb_tibble <- cbind(x_tibble, y_tibble) %>%# Combine x and y values
       )
     ) - 1)*y_shift + `Intensity/ mAU`
   ) %>%
-  mutate(Sample = factor(Sample, levels = rev(shift_order))) # Reorder factor 
+  mutate(Sample = factor(Sample, levels = rev(shift_order))) %>% # Reorder factor 
   # levels to be the reverse of shift_order, for pretty legend purposes.
+  mutate(`Intensity shifted scaled` = `shifted_y`/100000)  # Scale down y values
+  # for prettier axis.
 
 View(comb_tibble)
 
-options(scipen = 999)# Disable scientific notation for prettier y axis
+#options(scipen = 999)# Disable scientific notation for prettier y axis - 
+# deprecated
 dev.new()
 ggplot(data = filter(comb_tibble, between(`Time/ min`, 5, 15)),
        mapping = aes(x = `Time/ min`,
-                     y = shifted_y,
+                     y = `Intensity shifted scaled`,
                      color = Sample)) +
   geom_line(size=1) +
   #geom_hline(yintercept=50, linetype="dashed", color = "black") + 
-  scale_colour_manual(values=cbPalette2) +
+  scale_colour_manual(values=cbPalette2,
+                      labels=labels_formatted) +
   # xlim=c(range(5, 15)),
   # ylim=c(range(0, 1500000))
-  labs(title = paste("HPLC UV chromatograms of BG-PEG-NH2 standard curve,\n",
-                     "and overnight click reaction with MA-NHS"), color = "Sample") +
+  labs(title = expression(atop(paste("HPLC UV chromatograms of BG-PEG-NH"[2]," standard curve,"),
+                     "and overnight click reaction with MA-NHS")), color = "Sample") +
   xlab("Elution time/ min") +
-  ylab("Intensity at 220 nm/ mAU") +
+  ylab(expression(paste("Intensity at 220 nm/ mAU * ", 10^5))) +
+  annotate("segment", x = 9.5, xend = 9.95, y = 3, yend = 3, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
+  annotate("segment", x = 10.1, xend = 11.2, y = 2.5, yend = 2.5, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
+  annotate("segment", x = 11.6, xend = 12, y = 3, yend = 3, size = 1.5, colour = "black", arrow = arrow(ends = "both", angle = 90, length = unit(.2,"cm"))) +
   theme_classic() +
-  theme(plot.title = element_text(size=16, hjust = 0.5),
-        axis.title = element_text(size=15), legend.text = element_text(size=13),
+  theme(plot.title = element_text(size=20, hjust = 0.5),
+        axis.title = element_text(size=20), legend.text = element_text(size=13),
         axis.title.x = element_text(vjust=-1),
         axis.title.y = element_text(vjust = 2),
-        legend.title = element_text(size=15),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size=20),
+        legend.text = element_text(size=20, align = 0),
+        axis.text.x = element_text(size = 20),
+        axis.text.y = element_text(size = 20),
         aspect.ratio = 1/1.5)
 ggsave("HPLC-data-all.png")
 
