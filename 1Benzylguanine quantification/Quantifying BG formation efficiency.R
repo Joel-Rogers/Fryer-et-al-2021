@@ -57,7 +57,7 @@ lm_eqn <- function(df){
                         r2 = format(summary(lmx)$r.squared, digits = 5)))
   as.character(as.expression(eq));                 
 }
-view(filtdf)
+view(filtdf2)
 
 dev.new()
 ggplot(data = filtdf2, mapping = aes(x = `Concentration (uM)`, y = `BG-PEG-NH2 (9.6 - 10.0 min)`)) +
